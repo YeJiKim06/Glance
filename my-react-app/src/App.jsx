@@ -1,75 +1,38 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 
 const categories = ['IT/기술', '경제', '사회']
+const categoryQueries = {
+  'IT/기술': 'IT OR 기술 OR AI',
+  경제: '경제 OR 주식 OR 부동산',
+  사회: '사회 OR 교육 OR 복지',
+}
 
-const newsByCategory = {
+const fallbackArticles = {
   'IT/기술': [
     {
-      title: 'AI 기반 개인 비서 서비스가 새 주간 기능을 확대합니다',
-      summary: '사용자 맞춤형 요약과 일정 관리 기능이 추가되어 일상 업무 흐름을 더 빠르게 정리할 수 있습니다.',
-      source: 'Tech Pulse',
-      time: '12분 전',
-      link: 'https://example.com',
-    },
-    {
-      title: '반도체 업계가 차세대 생산라인 투자에 속도를 냅니다',
-      summary: '국내 기업들의 시설 확장 계획이 이어지며 산업 전반의 관심도가 높아지고 있습니다.',
-      source: 'Korea Industry',
-      time: '38분 전',
-      link: 'https://example.com',
-    },
-    {
-      title: '클라우드 보안 플랫폼의 자동 대응 기능이 강화됐습니다',
-      summary: '위협 탐지와 대응 속도를 높이기 위해 실시간 경보 연계 기능이 추가되었습니다.',
-      source: 'Security Weekly',
-      time: '1시간 전',
+      title: '로컬 샘플 데이터로 구성한 기술 브리핑',
+      summary: '실제 API가 응답하지 않을 때도 앱이 멈추지 않도록 기본 요약 카드가 계속 보입니다.',
+      source: 'Glance',
+      time: '지금',
       link: 'https://example.com',
     },
   ],
   경제: [
     {
-      title: '금리 안정 기대감에 증시 변동성이 완화되고 있습니다',
-      summary: '최근 지표가 안정적으로 나오면서 투자자 심리가 조금씩 회복세를 보이고 있습니다.',
-      source: 'Market Brief',
-      time: '20분 전',
-      link: 'https://example.com',
-    },
-    {
-      title: '중소기업 채용 지원 정책이 확대될 전망입니다',
-      summary: '정부 지원책이 이어지며 지역 기반 일자리 창출에 대한 기대가 커지고 있습니다.',
-      source: 'Economic Note',
-      time: '49분 전',
-      link: 'https://example.com',
-    },
-    {
-      title: '부동산 시장의 실수요 관점 분석이 주목받고 있습니다',
-      summary: '실거주 중심의 거래 패턴이 이어지며 중장기 시각에서의 관찰이 증가하고 있습니다.',
-      source: 'Housing Desk',
-      time: '2시간 전',
+      title: '로컬 샘플 데이터로 구성한 경제 브리핑',
+      summary: '경제 섹션도 동일하게 기본 상태를 유지하며 사용자 경험을 이어갑니다.',
+      source: 'Glance',
+      time: '지금',
       link: 'https://example.com',
     },
   ],
   사회: [
     {
-      title: '지역 커뮤니티 기반 봉사 활동이 활발하게 이어지고 있습니다',
-      summary: '주민 참여형 프로그램이 늘어나며 생활 밀착형 사회 이슈에 대한 관심이 높아지고 있습니다.',
-      source: 'Local Life',
-      time: '10분 전',
-      link: 'https://example.com',
-    },
-    {
-      title: '교통 혼잡 완화를 위한 시범 정책이 확대되고 있습니다',
-      summary: '출퇴근 시간대 운영 개선과 대중교통 연계 서비스가 함께 검토되고 있습니다.',
-      source: 'City Report',
-      time: '34분 전',
-      link: 'https://example.com',
-    },
-    {
-      title: '환경 캠페인 참여율이 높아지며 관심도가 증가했습니다',
-      summary: '플라스틱 감소와 재활용 실천 캠페인이 지역사회에서 꾸준히 확산되고 있습니다.',
-      source: 'Green Today',
-      time: '3시간 전',
+      title: '로컬 샘플 데이터로 구성한 사회 브리핑',
+      summary: '사회 이슈는 기본 안내 카드로 빠르게 확인할 수 있습니다.',
+      source: 'Glance',
+      time: '지금',
       link: 'https://example.com',
     },
   ],
@@ -78,6 +41,9 @@ const newsByCategory = {
 function App() {
   const [activeCategory, setActiveCategory] = useState('IT/기술')
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [articles, setArticles] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('glance-theme')
@@ -93,7 +59,43 @@ function App() {
     window.localStorage.setItem('glance-theme', isDarkMode ? 'dark' : 'light')
   }, [isDarkMode])
 
-  const items = newsByCategory[activeCategory] ?? newsByCategory['IT/기술']
+  useEffect(() => {
+    const loadNews = async () => {
+      setIsLoading(true)
+      setErrorMessage('')
+
+      try {
+        const response = await fetch(`https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(categoryQueries[activeCategory])}`)
+
+        if (!response.ok) {
+          throw new Error('뉴스 API 응답이 올바르지 않습니다.')
+        }
+
+        const data = await response.json()
+        const nextArticles = (data.hits || [])
+          .slice(0, 6)
+          .map((hit) => ({
+            title: hit.title || '제목이 없는 기사입니다.',
+            summary: hit.story_text || hit.comment_text || '요약 정보가 제공되지 않았습니다.',
+            source: hit.author || 'Anonymous',
+            time: hit.created_at ? new Date(hit.created_at).toLocaleString('ko-KR') : '방금',
+            link: hit.url || 'https://news.ycombinator.com/',
+          }))
+
+        setArticles(nextArticles.length > 0 ? nextArticles : fallbackArticles[activeCategory])
+      } catch (error) {
+        console.error(error)
+        setErrorMessage('실시간 뉴스 연결이 불안정해 기본 브리핑으로 전환했습니다.')
+        setArticles(fallbackArticles[activeCategory])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadNews()
+  }, [activeCategory])
+
+  const items = articles.length > 0 ? articles : fallbackArticles[activeCategory]
 
   return (
     <div className="dashboard-shell">
@@ -133,13 +135,26 @@ function App() {
           <h2>{activeCategory} 핵심 브리핑</h2>
           <p>
             최신 이슈를 짧은 요약과 함께 정리해 빠르게 파악할 수 있도록 구성했습니다.
-            로딩과 에러 상태, 반응형 레이아웃까지 첫 단계에서 바로 확인할 수 있게 준비했습니다.
+            로딩 상태와 에러 대응, 반응형 레이아웃까지 한 번에 확인할 수 있습니다.
           </p>
           <div className="hero-meta">
-            <span>• 업데이트 반영 중</span>
-            <span>• 외부 API 연동 준비 완료</span>
+            <span>• 실시간 데이터 연결</span>
+            <span>• 실패 시 대체 콘텐츠 제공</span>
           </div>
         </section>
+
+        {isLoading ? (
+          <section className="status-card" aria-live="polite">
+            <div className="spinner" aria-hidden="true" />
+            <p>뉴스를 불러오는 중입니다. 잠시만 기다려 주세요.</p>
+          </section>
+        ) : null}
+
+        {errorMessage ? (
+          <section className="status-card error" aria-live="polite">
+            <p>{errorMessage}</p>
+          </section>
+        ) : null}
 
         <section className="news-grid" aria-label="뉴스 카드 목록">
           {items.map((item) => (
@@ -159,7 +174,7 @@ function App() {
       </main>
 
       <footer className="dashboard-footer">
-        <p>데이터 출처: 공공/오픈 뉴스 API 연동 예정</p>
+        <p>데이터 출처: Hacker News Search API</p>
         <p>Glance는 매일 핵심 정보를 한눈에 보이도록 설계된 경량 대시보드입니다.</p>
       </footer>
     </div>
