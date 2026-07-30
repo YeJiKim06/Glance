@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './App.css'
 import CategoryNav from './components/CategoryNav'
 import NewsCardList from './components/NewsCardList'
+import SchedulePanel from './components/SchedulePanel'
 import VideoPanel from './components/VideoPanel'
 import { categories, categoryHighlights, rssFeeds, youtubeLinks, fallbackArticles } from './content'
 
@@ -134,6 +135,10 @@ function App() {
 
         {['미국 가십', '한국 연예', 'OTT/드라마/예능'].includes(activeCategory) ? (
           <VideoPanel links={youtubeLinks} />
+        ) : null}
+
+        {['한국 연예', 'OTT/드라마/예능', '최신 개봉 영화', '개봉 예정작'].includes(activeCategory) ? (
+          <SchedulePanel />
         ) : null}
 
         {featuredStory ? (
