@@ -98,44 +98,45 @@ function App() {
     window.localStorage.setItem('glance-theme', isDarkMode ? 'dark' : 'light')
   }, [isDarkMode])
 
-  useEffect(() => {
-    const loadNews = async () => {
-      setIsLoading(true)
-      setErrorMessage('')
+  const loadNews = async (category = activeCategory) => {
+    setIsLoading(true)
+    setErrorMessage('')
 
-      try {
-        const response = await fetch(`${rssApiBase}?rss_url=${encodeURIComponent(rssFeeds[activeCategory])}`)
+    try {
+      const response = await fetch(`${rssApiBase}?rss_url=${encodeURIComponent(rssFeeds[category])}`)
 
-        if (!response.ok) {
-          throw new Error('뉴스 API 응답이 올바르지 않습니다.')
-        }
-
-        const data = await response.json()
-        const nextArticles = (data.items || [])
-          .slice(0, 9)
-          .map((item) => ({
-            title: item.title || '제목이 없는 기사입니다.',
-            summary: item.description ? item.description.replace(/<[^>]+>/g, '').trim() : '요약 정보가 제공되지 않았습니다.',
-            source: item.author || 'Google News',
-            time: item.pubDate ? new Date(item.pubDate).toLocaleString('ko-KR') : '방금',
-            link: item.link || 'https://news.google.com/',
-            thumbnail: item.thumbnail || item.enclosure?.link || '',
-          }))
-
-        setArticles(nextArticles.length > 0 ? nextArticles : fallbackArticles[activeCategory])
-      } catch (error) {
-        console.error(error)
-        setErrorMessage('실시간 뉴스 연결이 불안정해 기본 브리핑으로 전환했습니다.')
-        setArticles(fallbackArticles[activeCategory])
-      } finally {
-        setIsLoading(false)
+      if (!response.ok) {
+        throw new Error('뉴스 API 응답이 올바르지 않습니다.')
       }
-    }
 
-    loadNews()
+      const data = await response.json()
+      const nextArticles = (data.items || [])
+        .slice(0, 9)
+        .map((item) => ({
+          title: item.title || '제목이 없는 기사입니다.',
+          summary: item.description ? item.description.replace(/<[^>]+>/g, '').trim() : '요약 정보가 제공되지 않았습니다.',
+          source: item.author || 'Google News',
+          time: item.pubDate ? new Date(item.pubDate).toLocaleString('ko-KR') : '방금',
+          link: item.link || 'https://news.google.com/',
+          thumbnail: item.thumbnail || item.enclosure?.link || '',
+        }))
+
+      setArticles(nextArticles.length > 0 ? nextArticles : fallbackArticles[category])
+    } catch (error) {
+      console.error(error)
+      setErrorMessage('실시간 뉴스 연결이 불안정해 기본 브리핑으로 전환했습니다.')
+      setArticles(fallbackArticles[category])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadNews(activeCategory)
   }, [activeCategory])
 
   const items = articles.length > 0 ? articles : fallbackArticles[activeCategory]
+  const featuredStory = items[0]
 
   return (
     <div className="dashboard-shell">
@@ -147,13 +148,23 @@ function App() {
             오늘의 핵심 뉴스를 빠르게 훑어보는 경량 대시보드입니다.
           </p>
         </div>
-        <button
-          className="theme-toggle"
-          onClick={() => setIsDarkMode((value) => !value)}
-          type="button"
-        >
-          {isDarkMode ? '☀️ 라이트 모드' : '🌙 다크 모드'}
-        </button>
+        <div className="header-actions">
+          <button
+            className="refresh-button"
+            onClick={() => loadNews(activeCategory)}
+            type="button"
+            disabled={isLoading}
+          >
+            {isLoading ? '불러오는 중…' : '🔄 새로고침'}
+          </button>
+          <button
+            className="theme-toggle"
+            onClick={() => setIsDarkMode((value) => !value)}
+            type="button"
+          >
+            {isDarkMode ? '☀️ 라이트 모드' : '🌙 다크 모드'}
+          </button>
+        </div>
       </header>
 
       <nav className="category-nav" aria-label="뉴스 카테고리">
@@ -211,6 +222,19 @@ function App() {
                 </a>
               ))}
             </div>
+          </section>
+        ) : null}
+
+        {featuredStory ? (
+          <section className="featured-story" aria-label="주요 기사">
+            <div className="featured-story-copy">
+              <p className="eyebrow">Featured story</p>
+              <h3>{featuredStory.title}</h3>
+              <p>{featuredStory.summary}</p>
+            </div>
+            <a href={featuredStory.link} target="_blank" rel="noreferrer">
+              바로 읽기
+            </a>
           </section>
         ) : null}
 

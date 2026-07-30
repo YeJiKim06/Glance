@@ -38,6 +38,58 @@ describe('App', () => {
     })
   })
 
+  it('reloads headlines when the refresh button is clicked', async () => {
+    const fetchMock = vi.mocked(globalThis.fetch)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ items: [] }),
+    })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
+    fetchMock.mockClear()
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ items: [] }),
+    })
+
+    screen.getByRole('button', { name: /새로고침/i }).click()
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('shows a featured story card for the top article', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            title: 'AI가 한국 산업을 바꾸고 있습니다',
+            description: '<p>국내 기업들이 AI를 도입하며 생산성과 효율을 높이고 있습니다.</p>',
+            pubDate: '2026-07-30 10:00:00',
+            link: 'https://example.com/ai',
+            thumbnail: 'https://example.com/thumb.png',
+            author: 'Glance',
+          },
+        ],
+      }),
+    })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/주요 기사/i)).toBeInTheDocument()
+    })
+
+    expect(screen.getByText(/AI가 한국 산업을 바꾸고 있습니다/i)).toBeInTheDocument()
+  })
+
   it('renders article cards with thumbnails and summaries when the API succeeds', async () => {
     vi.mocked(globalThis.fetch).mockResolvedValue({
       ok: true,
