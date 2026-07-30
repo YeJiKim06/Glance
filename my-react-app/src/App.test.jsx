@@ -37,4 +37,31 @@ describe('App', () => {
       expect(screen.getByText(/실시간 뉴스 연결이 불안정해/i)).toBeInTheDocument()
     })
   })
+
+  it('renders article cards with thumbnails and summaries when the API succeeds', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            title: 'AI가 한국 산업을 바꾸고 있습니다',
+            description: '<p>국내 기업들이 AI를 도입하며 생산성과 효율을 높이고 있습니다.</p>',
+            pubDate: '2026-07-30 10:00:00',
+            link: 'https://example.com/ai',
+            thumbnail: 'https://example.com/thumb.png',
+            author: 'Glance',
+          },
+        ],
+      }),
+    })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/AI가 한국 산업을 바꾸고 있습니다/i)).toBeInTheDocument()
+    })
+
+    expect(screen.getByAltText(/뉴스 미리보기/i)).toBeInTheDocument()
+    expect(screen.getByText(/국내 기업들이 AI를 도입하며 생산성과 효율을 높이고 있습니다/i)).toBeInTheDocument()
+  })
 })

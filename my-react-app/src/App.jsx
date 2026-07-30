@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import './App.css'
 
 const categories = ['IT/기술', '경제', '사회']
-const categoryQueries = {
-  'IT/기술': 'IT OR 기술 OR AI',
-  경제: '경제 OR 주식 OR 부동산',
-  사회: '사회 OR 교육 OR 복지',
+const rssApiBase = 'https://api.rss2json.com/v1/api.json'
+const rssFeeds = {
+  'IT/기술': 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20IT%20%EA%B8%B0%EC%88%A0&hl=ko&gl=KR&ceid=KR:ko',
+  경제: 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20%EA%B2%BD%EC%A0%9C&hl=ko&gl=KR&ceid=KR:ko',
+  사회: 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20%EC%82%AC%ED%9A%8C&hl=ko&gl=KR&ceid=KR:ko',
 }
 
 const fallbackArticles = {
@@ -65,21 +66,22 @@ function App() {
       setErrorMessage('')
 
       try {
-        const response = await fetch(`https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(categoryQueries[activeCategory])}`)
+        const response = await fetch(`${rssApiBase}?rss_url=${encodeURIComponent(rssFeeds[activeCategory])}`)
 
         if (!response.ok) {
           throw new Error('뉴스 API 응답이 올바르지 않습니다.')
         }
 
         const data = await response.json()
-        const nextArticles = (data.hits || [])
+        const nextArticles = (data.items || [])
           .slice(0, 6)
-          .map((hit) => ({
-            title: hit.title || '제목이 없는 기사입니다.',
-            summary: hit.story_text || hit.comment_text || '요약 정보가 제공되지 않았습니다.',
-            source: hit.author || 'Anonymous',
-            time: hit.created_at ? new Date(hit.created_at).toLocaleString('ko-KR') : '방금',
-            link: hit.url || 'https://news.ycombinator.com/',
+          .map((item) => ({
+            title: item.title || '제목이 없는 기사입니다.',
+            summary: item.description ? item.description.replace(/<[^>]+>/g, '').trim() : '요약 정보가 제공되지 않았습니다.',
+            source: item.author || 'Google News',
+            time: item.pubDate ? new Date(item.pubDate).toLocaleString('ko-KR') : '방금',
+            link: item.link || 'https://news.google.com/',
+            thumbnail: item.thumbnail || item.enclosure?.link || '',
           }))
 
         setArticles(nextArticles.length > 0 ? nextArticles : fallbackArticles[activeCategory])
@@ -159,6 +161,9 @@ function App() {
         <section className="news-grid" aria-label="뉴스 카드 목록">
           {items.map((item) => (
             <article key={item.title} className="news-card">
+              {item.thumbnail ? (
+                <img className="news-thumbnail" src={item.thumbnail} alt="뉴스 미리보기" />
+              ) : null}
               <div className="news-card-top">
                 <p className="news-source">{item.source}</p>
                 <p className="news-time">{item.time}</p>

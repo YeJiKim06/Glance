@@ -130,6 +130,14 @@
   gap: 12px;
 }
 
+.news-thumbnail {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 14px;
+  background: #e6ebf5;
+}
+
 .news-card-top {
   display: flex;
   justify-content: space-between;
