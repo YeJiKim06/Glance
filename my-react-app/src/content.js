@@ -1,5 +1,28 @@
 export const categories = ['IT/기술', '경제', '사회', '세계', '미국 가십', '한국 연예', 'OTT/드라마/예능', '최신 개봉 영화', '개봉 예정작']
 
+export const categoryHighlights = {
+  '한국 연예': {
+    eyebrow: 'Entertainment',
+    summary: '배우, 드라마, 예능, 스캔들까지 한 번에 확인하는 한국 연예 섹션입니다.',
+    badge: '연예 소식',
+  },
+  'OTT/드라마/예능': {
+    eyebrow: 'OTT & Series',
+    summary: '신작, 시즌, 플랫폼 업데이트를 한눈에 모아보는 OTT·드라마·예능 브리핑입니다.',
+    badge: 'OTT/드라마/예능',
+  },
+  '최신 개봉 영화': {
+    eyebrow: 'Cinema',
+    summary: '최근 개봉한 영화와 박스오피스 흐름을 빠르게 파악하는 영화 섹션입니다.',
+    badge: '개봉 영화',
+  },
+  '개봉 예정작': {
+    eyebrow: 'Coming Soon',
+    summary: '기대작과 공개 일정, 배우 라인업을 미리 확인할 수 있는 섹션입니다.',
+    badge: '기대작',
+  },
+}
+
 export const rssFeeds = {
   'IT/기술': 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20IT%20%EA%B8%B0%EC%88%A0&hl=ko&gl=KR&ceid=KR:ko',
   경제: 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20%EA%B2%BD%EC%A0%9C&hl=ko&gl=KR&ceid=KR:ko',

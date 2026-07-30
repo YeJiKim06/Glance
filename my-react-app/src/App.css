@@ -98,6 +98,11 @@
   padding: 24px;
 }
 
+.hero-card-entertainment {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.16), rgba(255, 187, 0, 0.12));
+  border-color: rgba(255, 107, 107, 0.24);
+}
+
 .hero-card h2 {
   margin: 0 0 12px;
 }

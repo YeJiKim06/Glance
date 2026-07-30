@@ -3,7 +3,7 @@ import './App.css'
 import CategoryNav from './components/CategoryNav'
 import NewsCardList from './components/NewsCardList'
 import VideoPanel from './components/VideoPanel'
-import { categories, rssFeeds, youtubeLinks, fallbackArticles } from './content'
+import { categories, categoryHighlights, rssFeeds, youtubeLinks, fallbackArticles } from './content'
 
 const rssApiBase = 'https://api.rss2json.com/v1/api.json'
 
@@ -67,6 +67,7 @@ function App() {
 
   const items = articles.length > 0 ? articles : fallbackArticles[activeCategory]
   const featuredStory = items[0]
+  const highlight = categoryHighlights[activeCategory]
 
   return (
     <div className="dashboard-shell">
@@ -104,17 +105,17 @@ function App() {
       />
 
       <main className="dashboard-main">
-        <section className="hero-card">
+        <section className={`hero-card ${['한국 연예', 'OTT/드라마/예능', '최신 개봉 영화', '개봉 예정작'].includes(activeCategory) ? 'hero-card-entertainment' : ''}`}>
           <p className="eyebrow">오늘의 요약</p>
           <h2>{activeCategory} 핵심 브리핑</h2>
           <p>
-            최신 이슈를 짧은 요약과 함께 정리해 빠르게 파악할 수 있도록 구성했습니다.
-            한국 뉴스뿐 아니라 세계 이슈와 미국 가십 섹션까지 함께 확인할 수 있습니다.
+            {highlight ? highlight.summary : '최신 이슈를 짧은 요약과 함께 정리해 빠르게 파악할 수 있도록 구성했습니다.'}
           </p>
           <div className="hero-meta">
             <span className="live-pill">● 실시간 뉴스 브리핑</span>
             <span>• 최신 이슈를 빠르게 확인</span>
             <span>• 실패 시 대체 콘텐츠 제공</span>
+            {highlight ? <span>• {highlight.badge}</span> : null}
           </div>
         </section>
 
