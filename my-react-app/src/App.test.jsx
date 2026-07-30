@@ -47,6 +47,21 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: /개봉 예정작/i })).toBeInTheDocument()
   })
 
+  it('shows an entertainment group switcher and switches between related tabs', () => {
+    render(<App />)
+
+    fireEvent.click(screen.getByRole('button', { name: /한국 연예/i }))
+
+    const switcher = screen.getByRole('tablist', { name: /엔터테인먼트 그룹/i })
+    const ottButton = Array.from(switcher.querySelectorAll('button')).find((button) => button.textContent === 'OTT / 드라마 / 예능')
+
+    expect(switcher).toBeInTheDocument()
+    expect(ottButton).toBeInTheDocument()
+
+    fireEvent.click(ottButton)
+    expect(ottButton).toHaveClass('active')
+  })
+
   it('reloads headlines when the refresh button is clicked', async () => {
     const fetchMock = vi.mocked(globalThis.fetch)
     fetchMock.mockResolvedValue({

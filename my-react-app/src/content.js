@@ -1,4 +1,10 @@
 export const categories = ['IT/기술', '경제', '사회', '세계', '미국 가십', '한국 연예', 'OTT/드라마/예능', '최신 개봉 영화', '개봉 예정작']
+export const entertainmentGroups = [
+  { key: '한국 연예', label: '한국 연예' },
+  { key: 'OTT/드라마/예능', label: 'OTT / 드라마 / 예능' },
+  { key: '최신 개봉 영화', label: '최신 개봉 영화' },
+  { key: '개봉 예정작', label: '개봉 예정작' },
+]
 
 export const categoryHighlights = {
   '한국 연예': {

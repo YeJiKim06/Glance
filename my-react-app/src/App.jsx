@@ -4,7 +4,7 @@ import CategoryNav from './components/CategoryNav'
 import NewsCardList from './components/NewsCardList'
 import SchedulePanel from './components/SchedulePanel'
 import VideoPanel from './components/VideoPanel'
-import { categories, categoryHighlights, rssFeeds, youtubeLinks, fallbackArticles } from './content'
+import { categories, entertainmentGroups, categoryHighlights, rssFeeds, youtubeLinks, fallbackArticles } from './content'
 
 const rssApiBase = 'https://api.rss2json.com/v1/api.json'
 
@@ -105,6 +105,21 @@ function App() {
         onSelect={setActiveCategory}
       />
 
+      {entertainmentGroups.some((group) => group.key === activeCategory) ? (
+        <div className="entertainment-group" role="tablist" aria-label="엔터테인먼트 그룹">
+          {entertainmentGroups.map((group) => (
+            <button
+              key={group.key}
+              className={`group-tab ${activeCategory === group.key ? 'active' : ''}`}
+              onClick={() => setActiveCategory(group.key)}
+              type="button"
+            >
+              {group.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <main className="dashboard-main">
         <section className={`hero-card ${['한국 연예', 'OTT/드라마/예능', '최신 개봉 영화', '개봉 예정작'].includes(activeCategory) ? 'hero-card-entertainment' : ''}`}>
           <p className="eyebrow">오늘의 요약</p>
@@ -133,11 +148,11 @@ function App() {
           </section>
         ) : null}
 
-        {['미국 가십', '한국 연예', 'OTT/드라마/예능'].includes(activeCategory) ? (
+        {['미국 가십'].includes(activeCategory) ? (
           <VideoPanel links={youtubeLinks} />
         ) : null}
 
-        {['한국 연예', 'OTT/드라마/예능', '최신 개봉 영화', '개봉 예정작'].includes(activeCategory) ? (
+        {['OTT/드라마/예능', '최신 개봉 영화', '개봉 예정작'].includes(activeCategory) ? (
           <SchedulePanel />
         ) : null}
 

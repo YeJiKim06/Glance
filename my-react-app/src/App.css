@@ -59,6 +59,28 @@
   gap: 10px;
 }
 
+.entertainment-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.group-tab {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.group-tab.active {
+  background: rgba(255, 107, 107, 0.16);
+  color: #c95a32;
+  border-color: rgba(255, 107, 107, 0.24);
+}
+
 .category-tab {
   min-width: 96px;
   justify-content: center;
