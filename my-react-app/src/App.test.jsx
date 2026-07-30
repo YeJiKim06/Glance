@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 import App from './App'
@@ -57,7 +57,7 @@ describe('App', () => {
       json: async () => ({ items: [] }),
     })
 
-    screen.getByRole('button', { name: /새로고침/i }).click()
+    fireEvent.click(screen.getByRole('button', { name: /새로고침/i }))
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1)
@@ -87,7 +87,7 @@ describe('App', () => {
       expect(screen.getByText(/주요 기사/i)).toBeInTheDocument()
     })
 
-    expect(screen.getByText(/AI가 한국 산업을 바꾸고 있습니다/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/AI가 한국 산업을 바꾸고 있습니다/i).length).toBeGreaterThan(0)
   })
 
   it('renders article cards with thumbnails and summaries when the API succeeds', async () => {
@@ -110,10 +110,10 @@ describe('App', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText(/AI가 한국 산업을 바꾸고 있습니다/i)).toBeInTheDocument()
+      expect(screen.getAllByText(/AI가 한국 산업을 바꾸고 있습니다/i).length).toBeGreaterThan(0)
     })
 
     expect(screen.getByAltText(/뉴스 미리보기/i)).toBeInTheDocument()
-    expect(screen.getByText(/국내 기업들이 AI를 도입하며 생산성과 효율을 높이고 있습니다/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/국내 기업들이 AI를 도입하며 생산성과 효율을 높이고 있습니다/i).length).toBeGreaterThan(0)
   })
 })

@@ -155,7 +155,7 @@ function App() {
             type="button"
             disabled={isLoading}
           >
-            {isLoading ? '불러오는 중…' : '🔄 새로고침'}
+            {isLoading ? '불러오는 중…' : '새로고침'}
           </button>
           <button
             className="theme-toggle"
@@ -228,7 +228,7 @@ function App() {
         {featuredStory ? (
           <section className="featured-story" aria-label="주요 기사">
             <div className="featured-story-copy">
-              <p className="eyebrow">Featured story</p>
+              <p className="eyebrow">주요 기사</p>
               <h3>{featuredStory.title}</h3>
               <p>{featuredStory.summary}</p>
             </div>
