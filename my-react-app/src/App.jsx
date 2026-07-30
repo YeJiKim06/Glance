@@ -1,81 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
+import CategoryNav from './components/CategoryNav'
+import NewsCardList from './components/NewsCardList'
+import VideoPanel from './components/VideoPanel'
+import { categories, rssFeeds, youtubeLinks, fallbackArticles } from './content'
 
-const categories = ['IT/기술', '경제', '사회', '세계', '미국 가십']
 const rssApiBase = 'https://api.rss2json.com/v1/api.json'
-const rssFeeds = {
-  'IT/기술': 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20IT%20%EA%B8%B0%EC%88%A0&hl=ko&gl=KR&ceid=KR:ko',
-  경제: 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20%EA%B2%BD%EC%A0%9C&hl=ko&gl=KR&ceid=KR:ko',
-  사회: 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20%EC%82%AC%ED%9A%8C&hl=ko&gl=KR&ceid=KR:ko',
-  세계: 'https://news.google.com/rss/search?q=%EA%B5%AD%EC%A0%9C%20%EC%9D%B4%EC%8A%88&hl=ko&gl=KR&ceid=KR:ko',
-  '미국 가십': 'https://news.google.com/rss/search?q=%EB%AF%B8%EA%B5%AD%20%EC%97%94%ED%84%B0%ED%85%8C%EC%9D%B8%EB%A8%BC%ED%8A%B8%20%EA%B0%80%EC%8B%AD&hl=ko&gl=KR&ceid=KR:ko',
-}
-
-const youtubeLinks = [
-  {
-    title: 'Celebrity News Breakdown',
-    description: '해외 연예계 이슈를 빠르게 훑어보는 영상',
-    link: 'https://www.youtube.com/results?search_query=celebrity+news+today',
-  },
-  {
-    title: 'Entertainment Gossip Recap',
-    description: '미국 가십과 연예계 소식을 정리한 영상',
-    link: 'https://www.youtube.com/results?search_query=entertainment+gossip+today',
-  },
-  {
-    title: 'Pop Culture Headlines',
-    description: '팝 컬처와 스타 이슈를 바로 확인하는 영상',
-    link: 'https://www.youtube.com/results?search_query=pop+culture+headlines',
-  },
-]
-
-const fallbackArticles = {
-  'IT/기술': [
-    {
-      title: '로컬 샘플 데이터로 구성한 기술 브리핑',
-      summary: '실제 API가 응답하지 않을 때도 앱이 멈추지 않도록 기본 요약 카드가 계속 보입니다.',
-      source: 'Glance',
-      time: '지금',
-      link: 'https://example.com',
-    },
-  ],
-  경제: [
-    {
-      title: '로컬 샘플 데이터로 구성한 경제 브리핑',
-      summary: '경제 섹션도 동일하게 기본 상태를 유지하며 사용자 경험을 이어갑니다.',
-      source: 'Glance',
-      time: '지금',
-      link: 'https://example.com',
-    },
-  ],
-  사회: [
-    {
-      title: '로컬 샘플 데이터로 구성한 사회 브리핑',
-      summary: '사회 이슈는 기본 안내 카드로 빠르게 확인할 수 있습니다.',
-      source: 'Glance',
-      time: '지금',
-      link: 'https://example.com',
-    },
-  ],
-  세계: [
-    {
-      title: '국제 이슈를 한눈에 보는 세계 뉴스 브리핑',
-      summary: '다양한 국가의 주요 이슈와 글로벌 흐름을 짧게 정리해 제공합니다.',
-      source: 'Glance',
-      time: '지금',
-      link: 'https://example.com',
-    },
-  ],
-  '미국 가십': [
-    {
-      title: '미국 엔터테인먼트와 연예계 이슈를 간단히 살펴보는 카드',
-      summary: '가십성 뉴스와 미국 연예계 이슈를 가볍게 훑어볼 수 있는 섹션입니다.',
-      source: 'Glance',
-      time: '지금',
-      link: 'https://example.com',
-    },
-  ],
-}
 
 function App() {
   const [activeCategory, setActiveCategory] = useState('IT/기술')
@@ -167,18 +97,11 @@ function App() {
         </div>
       </header>
 
-      <nav className="category-nav" aria-label="뉴스 카테고리">
-        {categories.map((category) => (
-          <button
-            key={category}
-            className={`category-tab ${activeCategory === category ? 'active' : ''}`}
-            onClick={() => setActiveCategory(category)}
-            type="button"
-          >
-            {category}
-          </button>
-        ))}
-      </nav>
+      <CategoryNav
+        categories={categories}
+        activeCategory={activeCategory}
+        onSelect={setActiveCategory}
+      />
 
       <main className="dashboard-main">
         <section className="hero-card">
@@ -208,21 +131,8 @@ function App() {
           </section>
         ) : null}
 
-        {activeCategory === '미국 가십' ? (
-          <section className="video-panel" aria-label="유튜브 영상 추천">
-            <div className="video-panel-header">
-              <p className="eyebrow">Watch more</p>
-              <h3>해외 가십 영상 바로 보기</h3>
-            </div>
-            <div className="video-list">
-              {youtubeLinks.map((video) => (
-                <a key={video.title} className="video-card" href={video.link} target="_blank" rel="noreferrer">
-                  <strong>{video.title}</strong>
-                  <span>{video.description}</span>
-                </a>
-              ))}
-            </div>
-          </section>
+        {['미국 가십', '한국 연예', 'OTT/드라마/예능'].includes(activeCategory) ? (
+          <VideoPanel links={youtubeLinks} />
         ) : null}
 
         {featuredStory ? (
@@ -238,30 +148,7 @@ function App() {
           </section>
         ) : null}
 
-        <section className="news-grid" aria-label="뉴스 카드 목록">
-          {items.map((item) => (
-            <article key={item.title} className="news-card">
-              {item.thumbnail ? (
-                <img className="news-thumbnail" src={item.thumbnail} alt="뉴스 미리보기" />
-              ) : null}
-              <div className="news-card-top">
-                <div className="news-source-block">
-                  <span className="news-source-label">출처</span>
-                  <p className="news-source">{item.source}</p>
-                </div>
-                <div className="news-meta-right">
-                  <span className="source-badge">{item.source}</span>
-                  <p className="news-time">{item.time}</p>
-                </div>
-              </div>
-              <h3>{item.title}</h3>
-              <p className="news-summary">{item.summary}</p>
-              <a href={item.link} target="_blank" rel="noreferrer">
-                자세히 보기
-              </a>
-            </article>
-          ))}
-        </section>
+        <NewsCardList items={items} />
       </main>
 
       <footer className="dashboard-footer">

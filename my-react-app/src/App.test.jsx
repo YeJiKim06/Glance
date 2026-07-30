@@ -38,6 +38,15 @@ describe('App', () => {
     })
   })
 
+  it('renders entertainment and movie tabs in the navigation', () => {
+    render(<App />)
+
+    expect(screen.getByRole('button', { name: /한국 연예/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /OTT\/드라마\/예능/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /최신 개봉 영화/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /개봉 예정작/i })).toBeInTheDocument()
+  })
+
   it('reloads headlines when the refresh button is clicked', async () => {
     const fetchMock = vi.mocked(globalThis.fetch)
     fetchMock.mockResolvedValue({
