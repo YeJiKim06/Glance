@@ -38,6 +38,18 @@ describe('App', () => {
     })
   })
 
+  it('does not render placeholder sample cards when live news fails', async () => {
+    vi.mocked(globalThis.fetch).mockRejectedValue(new Error('network error'))
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/실시간 뉴스 연결이 불안정해/i)).toBeInTheDocument()
+    })
+
+    expect(screen.queryByText(/로컬 샘플 데이터/i)).not.toBeInTheDocument()
+  })
+
   it('renders entertainment and movie tabs in the navigation', () => {
     render(<App />)
 
@@ -60,6 +72,15 @@ describe('App', () => {
 
     fireEvent.click(ottButton)
     expect(ottButton).toHaveClass('active')
+  })
+
+  it('renders a calendar-style schedule view for entertainment tabs', () => {
+    render(<App />)
+
+    fireEvent.click(screen.getByRole('button', { name: /OTT\/드라마\/예능/i }))
+
+    expect(screen.getByRole('grid', { name: /월간 캘린더/i })).toBeInTheDocument()
+    expect(screen.getByText(/다가오는 일정/i)).toBeInTheDocument()
   })
 
   it('reloads headlines when the refresh button is clicked', async () => {

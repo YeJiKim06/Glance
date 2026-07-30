@@ -4,7 +4,7 @@ import CategoryNav from './components/CategoryNav'
 import NewsCardList from './components/NewsCardList'
 import SchedulePanel from './components/SchedulePanel'
 import VideoPanel from './components/VideoPanel'
-import { categories, entertainmentGroups, categoryHighlights, rssFeeds, youtubeLinks, fallbackArticles } from './content'
+import { categories, entertainmentGroups, categoryHighlights, rssFeeds, youtubeLinks } from './content'
 
 const rssApiBase = 'https://api.rss2json.com/v1/api.json'
 
@@ -52,11 +52,11 @@ function App() {
           thumbnail: item.thumbnail || item.enclosure?.link || '',
         }))
 
-      setArticles(nextArticles.length > 0 ? nextArticles : fallbackArticles[category])
+      setArticles(nextArticles)
     } catch (error) {
       console.error(error)
       setErrorMessage('실시간 뉴스 연결이 불안정해 기본 브리핑으로 전환했습니다.')
-      setArticles(fallbackArticles[category])
+      setArticles([])
     } finally {
       setIsLoading(false)
     }
@@ -66,7 +66,7 @@ function App() {
     loadNews(activeCategory)
   }, [activeCategory])
 
-  const items = articles.length > 0 ? articles : fallbackArticles[activeCategory]
+  const items = articles
   const featuredStory = items[0]
   const highlight = categoryHighlights[activeCategory]
 
