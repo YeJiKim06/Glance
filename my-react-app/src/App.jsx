@@ -112,7 +112,7 @@ function App() {
 
         const data = await response.json()
         const nextArticles = (data.items || [])
-          .slice(0, 6)
+          .slice(0, 9)
           .map((item) => ({
             title: item.title || '제목이 없는 기사입니다.',
             summary: item.description ? item.description.replace(/<[^>]+>/g, '').trim() : '요약 정보가 제공되지 않았습니다.',
