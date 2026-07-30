@@ -1,13 +1,33 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
 
-const categories = ['IT/기술', '경제', '사회']
+const categories = ['IT/기술', '경제', '사회', '세계', '미국 가십']
 const rssApiBase = 'https://api.rss2json.com/v1/api.json'
 const rssFeeds = {
   'IT/기술': 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20IT%20%EA%B8%B0%EC%88%A0&hl=ko&gl=KR&ceid=KR:ko',
   경제: 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20%EA%B2%BD%EC%A0%9C&hl=ko&gl=KR&ceid=KR:ko',
   사회: 'https://news.google.com/rss/search?q=%ED%95%9C%EA%B5%AD%20%EC%82%AC%ED%9A%8C&hl=ko&gl=KR&ceid=KR:ko',
+  세계: 'https://news.google.com/rss/search?q=%EA%B5%AD%EC%A0%9C%20%EC%9D%B4%EC%8A%88&hl=ko&gl=KR&ceid=KR:ko',
+  '미국 가십': 'https://news.google.com/rss/search?q=%EB%AF%B8%EA%B5%AD%20%EC%97%94%ED%84%B0%ED%85%8C%EC%9D%B8%EB%A8%BC%ED%8A%B8%20%EA%B0%80%EC%8B%AD&hl=ko&gl=KR&ceid=KR:ko',
 }
+
+const youtubeLinks = [
+  {
+    title: 'Celebrity News Breakdown',
+    description: '해외 연예계 이슈를 빠르게 훑어보는 영상',
+    link: 'https://www.youtube.com/results?search_query=celebrity+news+today',
+  },
+  {
+    title: 'Entertainment Gossip Recap',
+    description: '미국 가십과 연예계 소식을 정리한 영상',
+    link: 'https://www.youtube.com/results?search_query=entertainment+gossip+today',
+  },
+  {
+    title: 'Pop Culture Headlines',
+    description: '팝 컬처와 스타 이슈를 바로 확인하는 영상',
+    link: 'https://www.youtube.com/results?search_query=pop+culture+headlines',
+  },
+]
 
 const fallbackArticles = {
   'IT/기술': [
@@ -32,6 +52,24 @@ const fallbackArticles = {
     {
       title: '로컬 샘플 데이터로 구성한 사회 브리핑',
       summary: '사회 이슈는 기본 안내 카드로 빠르게 확인할 수 있습니다.',
+      source: 'Glance',
+      time: '지금',
+      link: 'https://example.com',
+    },
+  ],
+  세계: [
+    {
+      title: '국제 이슈를 한눈에 보는 세계 뉴스 브리핑',
+      summary: '다양한 국가의 주요 이슈와 글로벌 흐름을 짧게 정리해 제공합니다.',
+      source: 'Glance',
+      time: '지금',
+      link: 'https://example.com',
+    },
+  ],
+  '미국 가십': [
+    {
+      title: '미국 엔터테인먼트와 연예계 이슈를 간단히 살펴보는 카드',
+      summary: '가십성 뉴스와 미국 연예계 이슈를 가볍게 훑어볼 수 있는 섹션입니다.',
       source: 'Glance',
       time: '지금',
       link: 'https://example.com',
@@ -137,10 +175,11 @@ function App() {
           <h2>{activeCategory} 핵심 브리핑</h2>
           <p>
             최신 이슈를 짧은 요약과 함께 정리해 빠르게 파악할 수 있도록 구성했습니다.
-            로딩 상태와 에러 대응, 반응형 레이아웃까지 한 번에 확인할 수 있습니다.
+            한국 뉴스뿐 아니라 세계 이슈와 미국 가십 섹션까지 함께 확인할 수 있습니다.
           </p>
           <div className="hero-meta">
-            <span>• 실시간 데이터 연결</span>
+            <span className="live-pill">● 실시간 뉴스 브리핑</span>
+            <span>• 최신 이슈를 빠르게 확인</span>
             <span>• 실패 시 대체 콘텐츠 제공</span>
           </div>
         </section>
@@ -158,6 +197,23 @@ function App() {
           </section>
         ) : null}
 
+        {activeCategory === '미국 가십' ? (
+          <section className="video-panel" aria-label="유튜브 영상 추천">
+            <div className="video-panel-header">
+              <p className="eyebrow">Watch more</p>
+              <h3>해외 가십 영상 바로 보기</h3>
+            </div>
+            <div className="video-list">
+              {youtubeLinks.map((video) => (
+                <a key={video.title} className="video-card" href={video.link} target="_blank" rel="noreferrer">
+                  <strong>{video.title}</strong>
+                  <span>{video.description}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section className="news-grid" aria-label="뉴스 카드 목록">
           {items.map((item) => (
             <article key={item.title} className="news-card">
@@ -169,7 +225,10 @@ function App() {
                   <span className="news-source-label">출처</span>
                   <p className="news-source">{item.source}</p>
                 </div>
-                <p className="news-time">{item.time}</p>
+                <div className="news-meta-right">
+                  <span className="source-badge">{item.source}</span>
+                  <p className="news-time">{item.time}</p>
+                </div>
               </div>
               <h3>{item.title}</h3>
               <p className="news-summary">{item.summary}</p>
