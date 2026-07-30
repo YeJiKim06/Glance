@@ -141,9 +141,35 @@
 .news-card-top {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 10px;
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.news-source-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.news-source-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.news-source {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.news-time {
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .news-card h3 {

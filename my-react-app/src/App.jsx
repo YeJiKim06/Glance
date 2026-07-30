@@ -165,7 +165,10 @@ function App() {
                 <img className="news-thumbnail" src={item.thumbnail} alt="뉴스 미리보기" />
               ) : null}
               <div className="news-card-top">
-                <p className="news-source">{item.source}</p>
+                <div className="news-source-block">
+                  <span className="news-source-label">출처</span>
+                  <p className="news-source">{item.source}</p>
+                </div>
                 <p className="news-time">{item.time}</p>
               </div>
               <h3>{item.title}</h3>
